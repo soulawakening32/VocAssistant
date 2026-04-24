@@ -2,6 +2,7 @@ from config import CONFIG
 from core.interfaces.brain_interface import BaseBrainProvider
 from brain.providers.local_rule_brain import LocalRuleBrainProvider
 from brain.providers.cloud_r1_1776 import CloudR11776Provider
+from brain.providers.local_mistral import LocalMistralProvider
 
 
 def get_brain_provider() -> BaseBrainProvider:
@@ -9,6 +10,9 @@ def get_brain_provider() -> BaseBrainProvider:
 
     if provider_name == "local_rule_brain":
         return LocalRuleBrainProvider()
+    
+    if provider_name == "local_mistral":
+        return LocalMistralProvider()
 
     if provider_name == "cloud_r1_1776":
         return CloudR11776Provider()

@@ -150,7 +150,7 @@ def load_config() -> AppConfig:
 
         active_vad_provider=_get_str("ACTIVE_VAD_PROVIDER", "local_webrtcvad"),
         active_stt_provider=_get_str("ACTIVE_PROVIDER", "local_faster_whisper"),
-        active_brain_provider=_get_str("ACTIVE_BRAIN_PROVIDER", "local_rule_brain"),
+        active_brain_provider=_get_str("ACTIVE_BRAIN_PROVIDER", "local_mistral"),
         active_translation_provider=_get_str("ACTIVE_TRANSLATION_PROVIDER", "local_nllb_distilled"),
         active_tts_provider=_get_str("ACTIVE_TTS_PROVIDER", "local_coqui"),
         active_memory_provider=_get_str("ACTIVE_MEMORY_PROVIDER", "local_json_memory"),
