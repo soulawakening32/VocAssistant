@@ -46,9 +46,11 @@ class LocalMistralProvider(BaseBrainProvider):
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
-                max_new_tokens=150,
+                max_new_tokens=120,
                 temperature=0.7,
                 do_sample=True,
+                top_p=0.9,
+                repetition_penalty=1.2,
             )
 
         generated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
@@ -77,6 +79,7 @@ class LocalMistralProvider(BaseBrainProvider):
                 role = "User" if msg.role == "user" else "Assistant"
                 prompt += f"{role}: {msg.content}\n"
 
-        prompt += f"User: {user_text}\nAssistant:"
+        def _build_prompt(self, user_text: str, history):
+             return f"<s>[INST] {user_text} [/INST]"
 
         return prompt
