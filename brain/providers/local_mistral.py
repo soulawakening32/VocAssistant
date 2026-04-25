@@ -53,9 +53,13 @@ class LocalMistralProvider(BaseBrainProvider):
                 repetition_penalty=1.2,
             )
 
-        generated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        input_length = inputs["input_ids"].shape[1]
 
-        response_text = generated_text.replace(prompt, "").strip()
+        generated_tokens = outputs[0][input_length:]
+
+        response_text = self.tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
+        
+
 
         return BrainResult(
             user_text=user_text,
@@ -80,6 +84,7 @@ class LocalMistralProvider(BaseBrainProvider):
                 prompt += f"{role}: {msg.content}\n"
 
         def _build_prompt(self, user_text: str, history):
-             return f"<s>[INST] {user_text} [/INST]"
+             return f"<s>[INST] Tu es un assistant intelligent. Réponds clairement.\n\n{user_text} [/INST]"
+
 
         return prompt
