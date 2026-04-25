@@ -51,15 +51,18 @@ class LocalMistralProvider(BaseBrainProvider):
                 do_sample=True,
                 top_p=0.9,
                 repetition_penalty=1.2,
+                eos_token_id=self.tokenizer.eos_token_id,      # 🔥 important
+                pad_token_id=self.tokenizer.eos_token_id       # 🔥 bonus stabilité
             )
 
+        # 🔥 EXTRACTION PROPRE DE LA RÉPONSE
         input_length = inputs["input_ids"].shape[1]
-
         generated_tokens = outputs[0][input_length:]
 
-        response_text = self.tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
-        
-
+        response_text = self.tokenizer.decode(
+            generated_tokens,
+            skip_special_tokens=True
+        ).strip()
 
         return BrainResult(
             user_text=user_text,
@@ -76,15 +79,11 @@ class LocalMistralProvider(BaseBrainProvider):
         )
 
     def _build_prompt(self, user_text: str, history: Optional[List[Message]]) -> str:
-        prompt = ""
+        system_prompt = (
+            "Tu es un assistant vocal intelligent. "
+            "Tu réponds uniquement à la question de l'utilisateur. "
+            "Tu ne génères pas de Q/A, ni d'exercices, ni de contenu hors sujet. "
+            "Réponds de manière claire, naturelle et concise."
+        )
 
-        if history:
-            for msg in history[-5:]:
-                role = "User" if msg.role == "user" else "Assistant"
-                prompt += f"{role}: {msg.content}\n"
-
-        def _build_prompt(self, user_text: str, history):
-             return f"<s>[INST] Tu es un assistant intelligent. Réponds clairement.\n\n{user_text} [/INST]"
-
-
-        return prompt
+        return f"<s>[INST] {system_prompt}\n\n{user_text} [/INST]"
