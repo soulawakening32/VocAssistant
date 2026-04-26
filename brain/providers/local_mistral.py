@@ -88,6 +88,7 @@ class LocalMistralProvider(BaseBrainProvider):
             return "en"
 
     def _build_prompt(self, user_text: str, lang: str) -> str:
+        return f"<s>[INST] {user_text} [/INST]"
 
         system_prompt = (
             "You are an AI assistant.\n"
