@@ -51,7 +51,7 @@ class LocalMistralProvider(BaseBrainProvider):
             outputs = self.model.generate(
                 **inputs,
                 max_new_tokens=120,
-                temperature=0.7,
+                temperature=0.6,
                 do_sample=True,
                 top_p=0.9,
                 repetition_penalty=1.2,
@@ -85,18 +85,20 @@ class LocalMistralProvider(BaseBrainProvider):
         try:
             return detect(text)
         except:
-            return "en"  # fallback
+            return "en"
 
     def _build_prompt(self, user_text: str, lang: str) -> str:
 
-
+        # 🔥 PROMPT ULTRA STRICT
         system_prompt = (
-            "You are a helpful and intelligent voice assistant. "
-            "Your task is to ANSWER the user's request, not repeat or translate it. "
-            "Always respond in the SAME language as the user. "
-            "Do not ask unnecessary questions. "
-            "Do not translate unless explicitly asked. "
-            "Give a clear, useful, and natural answer."
-    )
+            "You are a helpful assistant. "
+            "You must ANSWER the user question directly. "
+            "Never translate the input. "
+            "Never repeat the input. "
+            "Never reformulate the input. "
+            "Always give a direct answer. "
+            "Answer in the SAME language as the user."
+        )
 
-        return f"<s>[INST] {system_prompt}\n\n{user_text} [/INST]"
+        # 🔥 FORMAT MISTRAL CORRECT
+        return f"<s>[INST] {system_prompt}\n\nUser: {user_text} [/INST]"
