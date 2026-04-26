@@ -89,11 +89,14 @@ class LocalMistralProvider(BaseBrainProvider):
 
     def _build_prompt(self, user_text: str, lang: str) -> str:
 
+
         system_prompt = (
-            "You are an intelligent voice assistant. "
+            "You are a helpful and intelligent voice assistant. "
+            "Your task is to ANSWER the user's request, not repeat or translate it. "
             "Always respond in the SAME language as the user. "
-            "Do not change language. "
-            "Answer clearly and naturally."
-        )
+            "Do not ask unnecessary questions. "
+            "Do not translate unless explicitly asked. "
+            "Give a clear, useful, and natural answer."
+    )
 
         return f"<s>[INST] {system_prompt}\n\n{user_text} [/INST]"
