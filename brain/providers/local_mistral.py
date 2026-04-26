@@ -89,16 +89,16 @@ class LocalMistralProvider(BaseBrainProvider):
 
     def _build_prompt(self, user_text: str, lang: str) -> str:
 
-        # 🔥 PROMPT ULTRA STRICT
         system_prompt = (
-            "You are a helpful assistant. "
-            "You must ANSWER the user question directly. "
-            "Never translate the input. "
-            "Never repeat the input. "
-            "Never reformulate the input. "
-            "Always give a direct answer. "
-            "Answer in the SAME language as the user."
-        )
+            "You are an AI assistant.\n"
+            "IMPORTANT RULES:\n"
+            "- You must ANSWER the user's request.\n"
+            "- You must NOT translate the user's sentence.\n"
+            "- You must NOT repeat the user's sentence.\n"
+            "- You must NOT reformulate the user's sentence.\n"
+            "- You must NOT ask questions unless necessary.\n"
+            "- You must provide a direct answer.\n"
+            "- You must respond in the SAME language as the user.\n"
+    )
 
-        # 🔥 FORMAT MISTRAL CORRECT
-        return f"<s>[INST] {system_prompt}\n\nUser: {user_text} [/INST]"
+        return f"<s>[INST] {system_prompt}\n\n{user_text}\n\nAnswer: [/INST]"
