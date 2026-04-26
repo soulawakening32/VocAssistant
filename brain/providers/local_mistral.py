@@ -2,6 +2,8 @@ from typing import List, Optional
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
+from langdetect import detect
+
 from core.interfaces.brain_interface import BaseBrainProvider
 from core.schemas.brain_schema import BrainResult
 from core.schemas.session_schema import Message
@@ -39,7 +41,9 @@ class LocalMistralProvider(BaseBrainProvider):
 
         self.load()
 
-        prompt = self._build_prompt(user_text, history)
+        lang = self._detect_language(user_text)
+
+        prompt = self._build_prompt(user_text, lang)
 
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
 
@@ -51,11 +55,10 @@ class LocalMistralProvider(BaseBrainProvider):
                 do_sample=True,
                 top_p=0.9,
                 repetition_penalty=1.2,
-                eos_token_id=self.tokenizer.eos_token_id,      # 🔥 important
-                pad_token_id=self.tokenizer.eos_token_id       # 🔥 bonus stabilité
+                eos_token_id=self.tokenizer.eos_token_id,
+                pad_token_id=self.tokenizer.eos_token_id
             )
 
-        # 🔥 EXTRACTION PROPRE DE LA RÉPONSE
         input_length = inputs["input_ids"].shape[1]
         generated_tokens = outputs[0][input_length:]
 
@@ -78,12 +81,19 @@ class LocalMistralProvider(BaseBrainProvider):
             provider="local_mistral",
         )
 
-    def _build_prompt(self, user_text: str, history: Optional[List[Message]]) -> str:
+    def _detect_language(self, text: str) -> str:
+        try:
+            return detect(text)
+        except:
+            return "en"  # fallback
+
+    def _build_prompt(self, user_text: str, lang: str) -> str:
+
         system_prompt = (
-            "Tu es un assistant vocal intelligent. "
-            "Tu réponds uniquement à la question de l'utilisateur. "
-            "Tu ne génères pas de Q/A, ni d'exercices, ni de contenu hors sujet. "
-            "Réponds de manière claire, naturelle et concise."
+            "You are an intelligent voice assistant. "
+            "Always respond in the SAME language as the user. "
+            "Do not change language. "
+            "Answer clearly and naturally."
         )
 
         return f"<s>[INST] {system_prompt}\n\n{user_text} [/INST]"
